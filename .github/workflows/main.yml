@@ -10,36 +10,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm' # Speeds up subsequent runs by caching node_modules
 
-      - uses: actions/setup-java@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
           java-version: "17"
           distribution: temurin
+          cache: 'gradle' # Speeds up Gradle builds by caching dependencies
 
       - name: Install JS dependencies
-        run: npm install
+        # 'npm ci' is better for CI/CD than 'npm install' as it's faster and cleaner
+        run: npm ci 
 
-      # Ensure Expo-related dependencies are updated non-interactively so expo prebuild does not prompt
-      - name: Ensure Expo dependencies are up-to-date
-        run: |
-          # Attempt to upgrade Expo packages non-interactively; ignore errors so CI doesn't fail here
-          npx expo upgrade --non-interactive || true
-          # Reinstall to pick up any changes to package.json / lockfile
-          npm install
-
-      - name: Expo prebuild (generate native Android project)
+      - name: Expo Prebuild
+        # Standardize versions and generate native files non-interactively in one go
         run: npx expo prebuild --platform android --non-interactive
 
-      - name: Make gradlew executable
-        run: chmod +x android/gradlew
-
-      - name: Build debug APK (no keystore needed)
-        run: cd android && ./gradlew assembleDebug --no-daemon
+      - name: Build Debug APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
