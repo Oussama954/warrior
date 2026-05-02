@@ -24,9 +24,15 @@ jobs:
       - name: Install JS dependencies
         run: npm install --yes --no-audit --no-fund --loglevel=error
 
-      - name: Expo prebuild (generate native Android project)
+      - name: Force prebuild (step 1)
+        run: CI=1 npx expo prebuild --platform android || true
+      
+      - name: Install updated deps
+        run: npm install
+      
+      - name: Prebuild again (step 2)
         run: CI=1 npx expo prebuild --platform android
-
+        
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
