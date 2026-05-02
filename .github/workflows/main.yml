@@ -24,6 +24,14 @@ jobs:
       - name: Install JS dependencies
         run: npm install
 
+      # Ensure Expo-related dependencies are updated non-interactively so expo prebuild does not prompt
+      - name: Ensure Expo dependencies are up-to-date
+        run: |
+          # Attempt to upgrade Expo packages non-interactively; ignore errors so CI doesn't fail here
+          npx expo upgrade --non-interactive || true
+          # Reinstall to pick up any changes to package.json / lockfile
+          npm install
+
       - name: Expo prebuild (generate native Android project)
         run: npx expo prebuild --platform android --non-interactive
 
