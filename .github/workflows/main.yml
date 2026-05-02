@@ -22,7 +22,7 @@ jobs:
           distribution: temurin
 
       - name: Install JS dependencies
-        run: npm install -y
+        run: npm install --yes --no-audit --no-fund --loglevel=error
 
       - name: Expo prebuild (generate native Android project)
         run: npx expo prebuild --platform android --non-interactive
