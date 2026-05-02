@@ -25,7 +25,7 @@ jobs:
         run: npm install --yes --no-audit --no-fund --loglevel=error
 
       - name: Expo prebuild (generate native Android project)
-        run:  npx expo prebuild --platform android --y
+        run:  npx expo prebuild --platform android --interactive=false
 
       - name: Make gradlew executable
         run: chmod +x android/gradlew
